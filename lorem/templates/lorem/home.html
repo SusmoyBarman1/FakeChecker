@@ -1,0 +1,16 @@
+{% extends "lorem/base.html" %}
+{% block content %}
+	
+	<h2>Fake Checker</h2>
+	<p>Using Google News Vectors</p>
+	
+	<form method="post" action="">{% csrf_token %}
+		<input type="text" name="myQuery">
+		<input type="submit" value="submit">
+	</form>
+
+	{% for output in outputs %}
+		<p><br/><b>Accuracy for Query: </b>{{output.queryString}}<br/>= {{output.resultString}}%</p>
+	{% endfor %}
+
+{% endblock content %}
