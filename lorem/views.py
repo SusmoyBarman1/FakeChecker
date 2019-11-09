@@ -13,8 +13,14 @@ def home(request):
     from utils.DocSim import DocSim
     ds = DocSim(w2v_model)
 
+    source_doc = ""
+    if(request.method == "POST"):
+        query = request.POST['myQuery']
+        source_doc = query
+
+    # Calling Daily Star Rss
     from utils.DailyStarRss import DailyStarRss
-    DailyStarRss()
+    DailyRss()
     
     dstar = open(os.path.join(BASE, "dailyStar_top_news.txt"), "r")
     lines = dstar.readlines()
@@ -22,10 +28,37 @@ def home(request):
     for line in lines:
         target_docs.append(line)
 
-    source_doc = ""
-    if(request.method == "POST"):
-        query = request.POST['myQuery']
-        source_doc = query
+    # Calling Al Jazeera Rss
+    from utils.alJazeeraRss import alJazeeraRss
+    AlRss()
+    
+    dstar = open(os.path.join(BASE, "aljazeera_news.txt"), "r")
+    lines = dstar.readlines()
+
+    for line in lines:
+        target_docs.append(line)
+
+
+    # Calling NYTimes Rss
+    from utils.nytimesrss import nytimesrss
+    NyRss()
+    
+    dstar = open(os.path.join(BASE, "nytimes_news.txt"), "r")
+    lines = dstar.readlines()
+    
+    for line in lines:
+        target_docs.append(line)
+
+
+    # Calling theGuardian Rss
+    from utils.theGuardian import theGuardian
+    GuRss()
+    
+    dstar = open(os.path.join(BASE, "guardian_news.txt"), "r")
+    lines = dstar.readlines()
+    
+    for line in lines:
+        target_docs.append(line)
 
     # print(source_doc)
 
