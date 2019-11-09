@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import os
 
-class DailyRss():
-    url = "https://www.thedailystar.net/top-news/rss.xml"
+class NyRss():
+    url = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
 
     resp = requests.get(url)    
 
@@ -16,11 +16,11 @@ class DailyRss():
         news_item['title'] = item.title.text
         news_item['description'] = item.description.text
         news_item['link'] = item.link.text
-        news_item['image'] = item.content['url']
+        
         news_items.append(news_item)
         
     BASE = os.path.dirname(os.path.abspath(__file__))
-    file1 = open(os.path.join(BASE.replace("utils", "lorem"), "dailyStar_top_news.txt"), "aa")
+    file1 = open(os.path.join(BASE.replace("utils", "lorem"), "nytimes_news.txt"), "a")
     # # file1 = open("dailyStar_top_news.txt","w")
 
     for i in range(len(news_items)):
