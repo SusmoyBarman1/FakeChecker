@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 
-class DailyRss():
+class DailyStarRss():
     url = "https://www.thedailystar.net/top-news/rss.xml"
 
     resp = requests.get(url)    
@@ -20,8 +20,57 @@ class DailyRss():
         news_items.append(news_item)
         
     BASE = os.path.dirname(os.path.abspath(__file__))
-    file1 = open(os.path.join(BASE.replace("utils", "lorem"), "dailyStar_top_news.txt"), "aa")
+    file1 = open(os.path.join(BASE.replace("utils", "lorem"), "dailyStar_top_news.txt"), "a")
     # # file1 = open("dailyStar_top_news.txt","w")
+
+    
+
+    url = "https://www.aljazeera.com/xml/rss/all.xml"
+
+    resp = requests.get(url)    
+
+    soup = BeautifulSoup(resp.content, features="xml")
+    items = soup.findAll('item')
+
+    for item in items:
+        news_item = {}
+        news_item['title'] = item.title.text
+        news_item['description'] = item.description.text
+        news_item['link'] = item.link.text
+        
+        news_items.append(news_item)
+        
+
+    url = "https://rss.nytimes.com/services/xml/rss/nyt/World.xml"
+
+    resp = requests.get(url)    
+
+    soup = BeautifulSoup(resp.content, features="xml")
+    items = soup.findAll('item')
+
+    for item in items:
+        news_item = {}
+        news_item['title'] = item.title.text
+        news_item['description'] = item.description.text
+        news_item['link'] = item.link.text
+        
+        news_items.append(news_item)
+
+    url = "https://www.theguardian.com/world/rss"
+
+    resp = requests.get(url)    
+
+    soup = BeautifulSoup(resp.content, features="xml")
+    items = soup.findAll('item')
+
+    for item in items:
+        news_item = {}
+        news_item['title'] = item.title.text
+        news_item['description'] = item.description.text
+        news_item['link'] = item.link.text
+        
+        news_items.append(news_item)
+    
 
     for i in range(len(news_items)):
         #print('Titles: ',news_items[i]['title'])
@@ -32,5 +81,4 @@ class DailyRss():
         description = news_items[i]['description']+'\n'
         #print(description)
         file1.writelines(description) 
-
     file1.close()
