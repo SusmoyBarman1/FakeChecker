@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.files import File
 from gensim.models.keyedvectors import KeyedVectors
 import os.path
+from textblob import TextBlob
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(BASE, "GoogleNews-vectors-negative300.bin")
@@ -20,7 +21,7 @@ def home(request):
 
     # Calling Daily Star Rss
     from utils.DailyStarRss import DailyStarRss
-    DailyRss()
+    DailyStarRss()
     
     dstar = open(os.path.join(BASE, "dailyStar_top_news.txt"), "r")
     lines = dstar.readlines()
@@ -28,41 +29,11 @@ def home(request):
     for line in lines:
         target_docs.append(line)
 
-    # Calling Al Jazeera Rss
-    from utils.alJazeeraRss import alJazeeraRss
-    AlRss()
-    
-    dstar = open(os.path.join(BASE, "aljazeera_news.txt"), "r")
-    lines = dstar.readlines()
-
-    for line in lines:
-        target_docs.append(line)
-
-
-    # Calling NYTimes Rss
-    from utils.nytimesrss import nytimesrss
-    NyRss()
-    
-    dstar = open(os.path.join(BASE, "nytimes_news.txt"), "r")
-    lines = dstar.readlines()
-    
-    for line in lines:
-        target_docs.append(line)
-
-
-    # Calling theGuardian Rss
-    from utils.theGuardian import theGuardian
-    GuRss()
-    
-    dstar = open(os.path.join(BASE, "guardian_news.txt"), "r")
-    lines = dstar.readlines()
-    
-    for line in lines:
-        target_docs.append(line)
-
-    # print(source_doc)
 
     sim_scores = ds.calculate_similarity(source_doc, target_docs)
+    blob = TextBlob(source_doc)
+    polarity = blob.sentiment[0]
+    subjectivity = blob.sentiment[1]
 
     acc = 0
     for i in range(len(sim_scores)):
@@ -75,10 +46,21 @@ def home(request):
     result = round(acc*100, 1)
     # print(result)
 
+    subjectivity = round(subjectivity*100, 1)
+    polar = ""
+    if polarity>0:
+        polar = 'Positive'
+    elif polarity==0:
+        polar = 'Neutral'
+    else:
+        polar = 'Negative'
+
     outputs = [
         {
             'queryString': source_doc,
-            'resultString': str(result)
+            'resultAcc': str(result),
+            'resultSensitivity': polar,
+            'resultSubjectivity': str(subjectivity)
         }
     ]
 
