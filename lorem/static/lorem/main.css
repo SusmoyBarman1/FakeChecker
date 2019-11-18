@@ -40,7 +40,7 @@ ul {
   color: #444444;
 }
 
-a.article-title:hover {
+.article-title:hover {
   color: #428bca;
   text-decoration: none;
 }
@@ -82,5 +82,3 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
-1
-Downloading1

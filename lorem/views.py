@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.files import File
 from gensim.models.keyedvectors import KeyedVectors
+from textblob import TextBlob
 import os.path
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,12 @@ def home(request):
     from utils.DocSim import DocSim
     ds = DocSim(w2v_model)
 
+    source_doc = ""
+    if(request.method == "POST"):
+        query = request.POST['myQuery']
+        source_doc = query
+
+    # Calling Daily Star Rss
     from utils.DailyStarRss import DailyStarRss
     DailyStarRss()
     
@@ -22,14 +29,11 @@ def home(request):
     for line in lines:
         target_docs.append(line)
 
-    source_doc = ""
-    if(request.method == "POST"):
-        query = request.POST['myQuery']
-        source_doc = query
-
-    # print(source_doc)
 
     sim_scores = ds.calculate_similarity(source_doc, target_docs)
+    blob = TextBlob(source_doc)
+    polarity = blob.sentiment[0]
+    subjectivity = blob.sentiment[1]
 
     acc = 0
     for i in range(len(sim_scores)):
@@ -42,10 +46,21 @@ def home(request):
     result = round(acc*100, 1)
     # print(result)
 
+    subjectivity = round(subjectivity*100, 1)
+    polar = ""
+    if polarity>0:
+        polar = 'Positive'
+    elif polarity==0:
+        polar = 'Neutral'
+    else:
+        polar = 'Negative'
+
     outputs = [
         {
             'queryString': source_doc,
-            'resultString': str(result)
+            'resultAcc': str(result),
+            'resultSensitivity': polar,
+            'resultSubjectivity': str(subjectivity)
         }
     ]
 

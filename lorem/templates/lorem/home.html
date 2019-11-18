@@ -2,15 +2,53 @@
 {% block content %}
 	
 	<h2>Fake Checker</h2>
-	<p>Using Google News Vectors</p>
-	
+	<p>Check if your news is fake news</p>
+
 	<form method="post" action="">{% csrf_token %}
 		<input type="text" name="myQuery">
 		<input type="submit" value="submit">
 	</form>
 
 	{% for output in outputs %}
-		<p><br/><b>Accuracy for Query: </b>{{output.queryString}}<br/>= {{output.resultString}}%</p>
+		<p><br/><b>Query: </b>{{output.queryString}} <br/> <b>Accuracy: </b> {{output.resultAcc}}% <br/> <b>Sensitivity: </b> {{output.resultSensitivity}} <br/> <b>Subjectivity: </b> {{output.resultSubjectivity}}%</p>
 	{% endfor %}
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<div class="container">
+		<canvas id="pieChart"></canvas>
+	</div>
+	<script>
+		{% for output in outputs %}
+			var a = {{output.resultAcc}};
+			var b = {{output.resultSubjectivity}};
+		{% endfor %}
+		
+		let pieChart = document.getElementById('pieChart').getContext('2d');
+		let massPopChart = new Chart(pieChart, {
+			type: 'bar',
+			data: {
+				labels: ['Accuracy', 'Subjectivity'],
+				datasets: [{
+					label: '%',
+					data: [a, b],
+					backgroundColor: [
+		                'rgba(54, 162, 235, 0.3)',
+		                'rgba(255, 159, 64, 0.4)'
+            		]
+				}]
+			},
+			options: {
+			    scales: {
+			        yAxes: [{
+			            ticks: {
+			                beginAtZero: true
+			            }
+			        }]
+			    }
+			}
+			
+		});
+	</script>
 
 {% endblock content %}
